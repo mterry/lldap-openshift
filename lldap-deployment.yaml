@@ -4,6 +4,7 @@ metadata:
   annotations:
     lldap: https://github.com/nitnelave/lldap
     k8s: https://github.com/Evantage-WS/lldap-kubernetes
+    ocp: https://github.com/mterry/lldap-openshift
   labels:
     app: lldap
   name: lldap
@@ -19,13 +20,14 @@ spec:
       annotations:
         lldap: https://github.com/nitnelave/lldap
         k8s: https://github.com/Evantage-WS/lldap-kubernetes
+        ocp: https://github.com/mterry/lldap-openshift
       labels:
         app: lldap
     spec:
       containers:
-        - env:
+        - env: 
             - name: GID
-              value: "1001"
+              value: "10001"
             - name: LLDAP_JWT_SECRET
               valueFrom:
                 secretKeyRef:
@@ -41,11 +43,14 @@ spec:
                 secretKeyRef:
                   name: lldap-credentials
                   key: lldap-ldap-user-pass
-            - name: TZ
-              value: CET
             - name: UID
-              value: "1001"
-          image: nitnelave/lldap:latest
+              value: "10001"
+            - name: LLDAP_VERBOSE
+              valueFrom:
+                configMapKeyRef:
+                  name: lldap-config
+                  key: lldap-verbose
+          image: nitnelave/lldap:latest-alpine-rootless
           name: lldap
           ports:
             - containerPort: 3890
