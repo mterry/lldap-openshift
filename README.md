@@ -147,7 +147,3 @@ configuration guides by using:
 ```
 envsubst < sample-configs/ibm-software-hub.md > sample-configs/ibm-software-hub.md-customized
 ```
-
-## TODO
-
-- Update Helm charts
