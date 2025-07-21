@@ -4,6 +4,29 @@ You can set up IBM Software Hub to use LLDAP as an identity provider by followin
 the instructions in the IBM
 [documentation](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=users-connecting-your-identity-provider).
 
+
+## Sample default configuration if the embedded LDAP integration is enabled
+
+Per IBM Software Hub
+[documentation](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=users-connecting-your-identity-provider#ldap__no-iam__title__1):
+
+1. Log in to the IBM Software Hub web client.
+2. From the menu, click __Administration > Access control__.
+3. Click __LDAP configuration__.
+4. In the __LDAP server information__ section, provide the following information
+   about your LDAP server:
+
+   - __LDAP protocol__: ldap://
+   - __LDAP hostname__: $LLDAP_HOSTNAME
+   - __LDAP port__: 3890
+   - __User search base__: `ou=people,dc=example,dc=com`
+   - __User search field__: `displayname`
+   - __Domain search user__: `cn=admin,ou=people,dc=example,dc=com`
+   - __Domain search password__: $LLDAP_LDAP_USER_PASS
+   - __Email__: `mail`
+
+5. Test the connection with a previously configured username and password
+
 ## Sample default configuration if the Identity Management Service is enabled
 
 Per IBM Software Hub
