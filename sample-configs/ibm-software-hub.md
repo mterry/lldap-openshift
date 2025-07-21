@@ -16,13 +16,13 @@ Per IBM Software Hub
 4. In the __LDAP server information__ section, provide the following information
    about your LDAP server:
 
-   - __LDAP protocol__: ldap://
-   - __LDAP hostname__: $LLDAP_HOSTNAME
-   - __LDAP port__: 3890
+   - __LDAP protocol__: `ldap://`
+   - __LDAP hostname__: `$LLDAP_HOSTNAME`
+   - __LDAP port__: `3890`
    - __User search base__: `ou=people,dc=example,dc=com`
    - __User search field__: `displayname`
    - __Domain search user__: `cn=admin,ou=people,dc=example,dc=com`
-   - __Domain search password__: $LLDAP_LDAP_USER_PASS
+   - __Domain search password__: `$LLDAP_LDAP_USER_PASS`
    - __Email__: `mail`
 
 5. Test the connection with a previously configured username and password
