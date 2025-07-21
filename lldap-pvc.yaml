@@ -4,6 +4,7 @@ metadata:
   labels:
     app: lldap
   name: lldap-data
+  namespace: $LLDAP_NAMESPACE
 spec:
   storageClassName: ocs-storagecluster-cephfs
   accessModes:

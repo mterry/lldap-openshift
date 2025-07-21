@@ -8,6 +8,7 @@ metadata:
   labels:
     app: lldap
   name: lldap-service
+  namespace: $LLDAP_NAMESPACE
 spec:
   ports:
     - name: "3890"

@@ -2,7 +2,7 @@ kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: lldap
-  namespace: lldap
+  namespace: $LLDAP_NAMESPACE
   labels:
     app: lldap
 spec:

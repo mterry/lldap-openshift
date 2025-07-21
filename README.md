@@ -1,99 +1,153 @@
-# Using the Light LDAP (LLDAP) implementation for authentication on Kubernetes
+# Using the Light LDAP (LLDAP) implementation for authentication on OpenShift
 
 LLDAP homepage: https://github.com/nitnelave/lldap
 
 ## About
 
-For testing purposes you can run the LLDAP container on Kubernetes and use the
+For testing purposes you can run the LLDAP container on OpenShift and use the
 container as a LDAP authentication backend.
 
 Thanks to nitnelave for the changing LLDAP to get it authenticating with SUSE
-Rancher (see https://github.com/nitnelave/lldap/issues/432)
+Rancher (see https://github.com/nitnelave/lldap/issues/432), and thanks to
+Evantage-WS for building the original Kubernetes version of this implementation
+(see https://github.com/Evantage-WS/lldap-kubernetes).
 
-## Set the variables needed and create Kubernetes secret of it
+## Login to OpenShift and create new project
 
-The LLDAP container will be using thes secrets, without creating these
-secrets, the pod will not be up and running
+Set your project namespace as an environment variable:
 
 ```
-NAMESPACE=lldap # in which namespace the lldap container will be installed, always use lowercase
-LLDAP_JWT_SECRET=<some random value>
-LLDAP_LDAP_USER_PASS=admin # change if wanted
-LLDAP_BASE_DN=dc=evantage,dc=nl # set your own is wanted
+export LLDAP_NAMESPACE=lldap # in which namespace the lldap container will be installed, always use lowercase
+```
 
-kubectl create secret generic lldap-credentials \
+Login to OpenShift with your administrator account credentials:
+
+```
+oc login \
+   --token=<OCP admin API key> \
+   --server=<OCP API URL>
+```
+
+Create a new project to contain all the LLDAP components:
+
+```
+oc new-project lldap
+```
+
+## Create secret LLDAP credentials
+
+The LLDAP container will be using these secrets. The pod will not boot
+successfully without these credentials set within an OpenShift Secret.
+
+```
+export LLDAP_JWT_SECRET=$(echo "thisisademopassword" | base64) # update with your own secret
+export LLDAP_LDAP_USER_PASS=$(echo "demoadminpassword" | base64) # update with your own admin password
+export LLDAP_BASE_DN=$(echo "dc=example,dc=com" | base64) # set your own base DN for the LDAP hierarchy
+```
+
+Once the session variables are set, either create the OpenShift secret via the
+CLI or by updating `lldap-credentials.yaml`.
+
+### Create the secrets from environment variables
+
+```
+oc create secret generic lldap-credentials \
   --from-literal=lldap-jwt-secret=${LLDAP_JWT_SECRET} \
   --from-literal=lldap-ldap-user-pass=${LLDAP_LDAP_USER_PASS} \
   --from-literal=base-dn=${LLDAP_BASE_DN} \
-  -n ${NAMESPACE}
+  -n ${LLDAP_NAMESPACE}
 ```
 
-## Apply the yaml files
-
-A PVC will be used to store the data persistant. It will use the local path provisioner,
-see https://github.com/rancher/local-path-provisioner. If it is not installed, please
-install this prior to applying the LLDAP yaml files.
-
-Apply the LLDAP deployment in the same namespace as where the secrets were created:
+### Create the secrets by updating and applying the YAML
 
 ```
-kubectl apply -f lldap-persistentvolumeclaim.yaml -n ${NAMESPACE}
-kubectl apply -f lldap-deployment.yaml -n ${NAMESPACE}
-kubectl apply -f lldap-service.yaml -n ${NAMESPACE}
+envsubst < lldap-credentials.yaml > lldap-credentials.yaml-customized
+oc apply -f lldap-credentials.yaml-customized -n $LLDAP_NAMESPACE
+```
+
+## Apply the YAML configurations
+
+### Configuration layout
+
+- `lldap-credentials.yaml`: OpenShift secrets for LLDAP configuration
+- `lldap-configmap.yaml`: Configuration environment variables for LLDAP
+- `lldap-pvc.yaml`: Persistent Volume Claim for LLDAP
+  - pre-configured for RWO on cephfs
+- `lldap-deployment.yaml`: Deployment definition for LLDAP
+  - using `nitnelave/lldap:latest-alpine-rootless` Docker Hub image
+- `lldap-service.yaml`: Service definition for LLDAP exposing
+  - LDAP on port 3890
+  - admin web frontend on 17170
+- `lldap-route.yaml`: Route definition for LLDAP exposing the LDAP admin web
+  console
+
+### Update YAML templates
+
+Using `envsubst`, update the YAML templates within the repository with the
+values assigned to the environment variables set previously.
+
+```
+envsubst < lldap-configmap.yaml > lldap_configmap.yaml-customized
+envsubst < lldap-pvc.yaml > lldap_pvc.yaml-customized
+envsubst < lldap-deployment.yaml > lldap_deployment.yaml-customized
+envsubst < lldap-service.yaml > lldap_service.yaml-customized
+envsubst < lldap-route.yaml > lldap_route.yaml-customized
+```
+
+### Apply updated YAMLs
+
+Install LLDAP on the OpenShift cluster by applying the customized YAML templates
+to the cluster.
+
+```
+oc apply -f lldap-configmap.yaml-customized -n $LLDAP_NAMESPACE
+oc apply -f lldap-pvc.yaml-customized -n $LLDAP_NAMESPACE
+oc apply -f lldap-deployment.yaml-customized -n $LLDAP_NAMESPACE
+oc apply -f lldap-service.yaml-customized -n $LLDAP_NAMESPACE
+oc apply -f lldap-route.yaml-customized -n $LLDAP_NAMESPACE
 ```
 
 It will take maybe a minute or so, after pulling the image it will be up and running.
 
-Your LLDAP container is then ready for accepting LDAP requests on port 3890.
+Your LLDAP container is then ready for accepting LDAP requests on port 3890
+through the internal cluster network. As it will be necessary for configuring
+LDAP access for cluster services, take note of the deployed service's hostname from
+the OCP web console, or use the following command to find the hostname and store
+it as an environment variable.
+
+```
+export LLDAP_HOSTNAME=$(oc get svc lldap-service -o go-template='{{.metadata.name}}.{{.metadata.namespace}}.svc.cluster.local{{println}}')
+```
 
 ## Accessing the UI
 
-To add user and groups to LLDAP, you can use the UI of LLDAP. You can use a kubectl
-port-forward on the service to get to this UI:
+To add user and groups to LLDAP, you can use the web admin UI included in LLDAP
+and exposed through the deployed route. Get the route URL from the OCP web
+console, or use the following CLI command to find the URL:
+
 ```
-kubectl port-forward service/lldap-service 17170:17170 -n ${NAMESPACE}
+oc get routes -n $LLDAP_NAMESPACE
 ```
 
-And in your browser go to http://127.0.0.1:17170. Login with admin and the password set in variable above.
+In your browser go to the URL you retrieved in the step before. Login with `admin`
+and use the password set in the environment variables previously.
 
 For creating user and groups, please look at the LLDAP documentation at https://github.com/nitnelave/lldap
 
-Good luck!
+## Connecting LLDAP to consumer services
 
-## Using the helm chart
+For creating connections to your new LLDAP implementation, see the example
+configs in the [core LLDAP repository]
+(https://github.com/lldap/lldap/tree/main/example_configs) or use example
+configurations stored in `sample-configs/` in this repository. Example
+configurations in this repository use the environment variables set in this
+installation guide to simplify deployment, and you can generate customized
+configuration guides by using:
 
-### Required values and recommended values
-
-Always create your own secrets and usernames:
-```yaml
-secret:
-  lldapJwtSecret: "replace-me"
-  lldapUserName: "admin" # this has a default value but can be overridden
-  lldapUserPass: "replace-me"
-  lldapBaseDn: "dc=homelab,dc=home" # this has a default value but can be overridden
+```
+envsubst < sample-configs/ibm-software-hub.md > sample-configs/ibm-software-hub.md-customized
 ```
 
-Set your own ingress values:
-```yaml
-ingress:
-  enabled: true
-  ingressClassName: nginx
-  annotations: {}
-  labels: {}
-  hosts:
-    - host: "lldap.test.com"
-      paths:
-        - path: "/"
-          pathType: "Prefix"
-  tls:
-    - secretName: "lldap-secret-tls"
-      hosts:
-        - "lldap.test.com"
-```
+## TODO
 
-### Install the chart
-
-```bash
-```
-helm install lldap-chart https://github.com/Evantage-WS/lldap-kubernetes/releases/download/lldap-chart-0.3.4/lldap-chart-0.3.4.tgz
-```
+- Update Helm charts
