@@ -87,11 +87,11 @@ Using `envsubst`, update the YAML templates within the repository with the
 values assigned to the environment variables set previously.
 
 ```
-envsubst < lldap-configmap.yaml > lldap_configmap.yaml-customized
-envsubst < lldap-pvc.yaml > lldap_pvc.yaml-customized
-envsubst < lldap-deployment.yaml > lldap_deployment.yaml-customized
-envsubst < lldap-service.yaml > lldap_service.yaml-customized
-envsubst < lldap-route.yaml > lldap_route.yaml-customized
+envsubst < lldap-configmap.yaml > lldap-configmap.yaml-customized
+envsubst < lldap-pvc.yaml > lldap-pvc.yaml-customized
+envsubst < lldap-deployment.yaml > lldap-deployment.yaml-customized
+envsubst < lldap-service.yaml > lldap-service.yaml-customized
+envsubst < lldap-route.yaml > lldap-route.yaml-customized
 ```
 
 ### Apply updated YAMLs
