@@ -78,8 +78,10 @@ oc apply -f lldap-credentials.yaml-customized -n $LLDAP_NAMESPACE
 - `lldap-service.yaml`: Service definition for LLDAP exposing
   - LDAP on port 3890
   - admin web frontend on 17170
-- `lldap-route.yaml`: Route definition for LLDAP exposing the LDAP admin web
-  console
+- `lldap-route.yaml`: (Deprecated) Route definition for LLDAP exposing
+  the LLDAP admin web console insecurely over HTTP
+- `lldap-route-tls.yaml`: Route definition for LLDAP with edge-terminating
+  TLS connection exposing the LLDAP admin web console securely over HTTPS
 
 ### Update YAML templates
 
@@ -91,7 +93,7 @@ envsubst < lldap-configmap.yaml > lldap-configmap.yaml-customized
 envsubst < lldap-pvc.yaml > lldap-pvc.yaml-customized
 envsubst < lldap-deployment.yaml > lldap-deployment.yaml-customized
 envsubst < lldap-service.yaml > lldap-service.yaml-customized
-envsubst < lldap-route.yaml > lldap-route.yaml-customized
+envsubst < lldap-route-tls.yaml > lldap-route-tls.yaml-customized
 ```
 
 ### Apply updated YAMLs
@@ -104,7 +106,7 @@ oc apply -f lldap-configmap.yaml-customized -n $LLDAP_NAMESPACE
 oc apply -f lldap-pvc.yaml-customized -n $LLDAP_NAMESPACE
 oc apply -f lldap-deployment.yaml-customized -n $LLDAP_NAMESPACE
 oc apply -f lldap-service.yaml-customized -n $LLDAP_NAMESPACE
-oc apply -f lldap-route.yaml-customized -n $LLDAP_NAMESPACE
+oc apply -f lldap-route-tls.yaml-customized -n $LLDAP_NAMESPACE
 ```
 
 It will take maybe a minute or so, after pulling the image it will be up and running.

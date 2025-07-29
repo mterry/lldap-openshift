@@ -1,0 +1,18 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: lldap
+  namespace: $LLDAP_NAMESPACE
+  labels:
+    app: lldap
+spec:
+  to:
+    kind: Service
+    name: lldap-service
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  port:
+    targetPort: '17170'
+  alternateBackends: []
+        
