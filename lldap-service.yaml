@@ -6,8 +6,8 @@ metadata:
     k8s: https://github.com/Evantage-WS/lldap-kubernetes
     ocp: https://github.com/mterry/lldap-openshift
   labels:
-    app: $LLDAP_NAME
-  name: $LLDAP_NAME-service
+    app: $LLDAP_APP_NAME
+  name: $LLDAP_APP_NAME-service
   namespace: $LLDAP_NAMESPACE
 spec:
   ports:
@@ -18,5 +18,5 @@ spec:
       port: $LLDAP_ADMIN_PORT
       targetPort: $LLDAP_ADMIN_PORT
   selector:
-    app: $LLDAP_NAME 
+    app: $LLDAP_APP_NAME 
 

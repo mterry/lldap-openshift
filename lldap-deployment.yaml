@@ -6,14 +6,14 @@ metadata:
     k8s: https://github.com/Evantage-WS/lldap-kubernetes
     ocp: https://github.com/mterry/lldap-openshift
   labels:
-    app: $LLDAP_NAME
-  name: $LLDAP_NAME
+    app: $LLDAP_APP_NAME
+  name: $LLDAP_APP_NAME
   namespace: $LLDAP_NAMESPACE
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: $LLDAP_NAME
+      app: $LLDAP_APP_NAME
   strategy:
     type: Recreate
   template:
@@ -23,7 +23,7 @@ spec:
         k8s: https://github.com/Evantage-WS/lldap-kubernetes
         ocp: https://github.com/mterry/lldap-openshift
       labels:
-        app: $LLDAP_NAME
+        app: $LLDAP_APP_NAME
     spec:
       containers:
         - env: 
@@ -32,35 +32,35 @@ spec:
             - name: LLDAP_JWT_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: $LLDAP_NAME-credentials
+                  name: $LLDAP_APP_NAME-credentials
                   key: lldap-jwt-secret
             - name: LLDAP_LDAP_BASE_DN
               valueFrom:
                 secretKeyRef:
-                  name: $LLDAP_NAME-credentials
+                  name: $LLDAP_APP_NAME-credentials
                   key: base-dn
             - name: LLDAP_LDAP_USER_PASS
               valueFrom:
                 secretKeyRef:
-                  name: $LLDAP_NAME-credentials
+                  name: $LLDAP_APP_NAME-credentials
                   key: lldap-ldap-user-pass
             - name: UID
               value: "10001"
             - name: LLDAP_VERBOSE
               valueFrom:
                 configMapKeyRef:
-                  name: $LLDAP_NAME-config
+                  name: $LLDAP_APP_NAME-config
                   key: lldap-verbose
           image: nitnelave/lldap:latest-alpine-rootless
-          name: $LLDAP_NAME
+          name: $LLDAP_APP_NAME
           ports:
             - containerPort: $LLDAP_LDAP_PORT 
             - containerPort: $LLDAP_ADMIN_PORT
           volumeMounts:
             - mountPath: /data
-              name: $LLDAP_NAME-data
+              name: $LLDAP_APP_NAME-data
       restartPolicy: Always
       volumes:
-        - name: $LLDAP_NAME-data
+        - name: $LLDAP_APP_NAME-data
           persistentVolumeClaim:
-            claimName: $LLDAP_NAME-data
+            claimName: $LLDAP_APP_NAME-data

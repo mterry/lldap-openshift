@@ -2,8 +2,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    app: $LLDAP_NAME
-  name: $LLDAP_NAME-data
+    app: $LLDAP_APP_NAME
+  name: $LLDAP_APP_NAME-data
   namespace: $LLDAP_NAMESPACE
 spec:
   storageClassName: ocs-storagecluster-cephfs
