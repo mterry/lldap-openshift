@@ -1,9 +1,12 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: lldap-config
+  name: $LLDAP_NAME-config
   namespace: $LLDAP_NAMESPACE
   labels:
-    app: lldap
+    app: $LLDAP_NAME
 data:
-  lldap-verbose: "true"
+  lldap-name: $LLDAP_NAME
+  lldap-ldap-port: $LLDAP_LDAP_PORT
+  lldap-admin-port: $LLDAP_ADMIN_PORT
+  lldap-verbose: $LLDAP_DEBUG

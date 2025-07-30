@@ -1,17 +1,17 @@
 kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
-  name: lldap
+  name: $LLDAP_NAME
   namespace: $LLDAP_NAMESPACE
   labels:
-    app: lldap
+    app: $LLDAP_NAME
 spec:
   to:
     kind: Service
-    name: lldap-service
+    name: $LLDAP_NAME-service
   tls:
     null
   port:
-    targetPort: '17170'
+    targetPort: '$LLDAP_ADMIN_PORT'
   alternateBackends: []
         

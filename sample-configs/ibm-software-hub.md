@@ -18,10 +18,10 @@ Per IBM Software Hub
 
    - __LDAP protocol__: `ldap://`
    - __LDAP hostname__: `$LLDAP_HOSTNAME`
-   - __LDAP port__: `3890`
-   - __User search base__: `ou=people,dc=example,dc=com`
+   - __LDAP port__: `$LLDAP_LDAP_PORT`
+   - __User search base__: `ou=people,$LLDAP_BASE_DN`
    - __User search field__: `displayname`
-   - __Domain search user__: `cn=admin,ou=people,dc=example,dc=com`
+   - __Domain search user__: `cn=admin,ou=people,$LLDAP_BASE_DN`
    - __Domain search password__: `$LLDAP_LDAP_USER_PASS`
    - __Email__: `mail`
 
@@ -43,9 +43,9 @@ Per IBM Software Hub
 - __Connection name__: `LLDAP`
 - __Server type__: `Custom`
 - __Case insensitive user search__: `True`
-- __Base DN__: `ou=people,dc=example,dc=com`
-- __Bind DN__: `cn=admin,ou=people,dc=example,dc=com`
+- __Base DN__: `ou=people,$LLDAP_BASE_DN`
+- __Bind DN__: `cn=admin,ou=people,$LLDAP_BASE_DN`
 - __Bind DN password__: `$LLDAP_LDAP_USER_PASS`
-- __Server URL__: `ldap://$LLDAP_HOSTNAME:3890`
+- __Server URL__: `ldap://$LLDAP_HOSTNAME:$LLDAP_LDAP_PORT`
 - __User filter__: `(&(uid=%v)(objectClass=person))`
 - __User ID map__: `*:uid`
