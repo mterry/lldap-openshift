@@ -9,4 +9,5 @@ data:
   lldap-name: "$LLDAP_APP_NAME"
   lldap-ldap-port: "$LLDAP_LDAP_PORT"
   lldap-admin-port: "$LLDAP_ADMIN_PORT"
+  lldap-base-dn: "$LLDAP_BASE_DN"
   lldap-verbose: "$LLDAP_DEBUG"

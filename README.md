@@ -43,10 +43,13 @@ successfully without these credentials set within an OpenShift Secret.
 export LLDAP_APP_NAME="lldap"
 export LLDAP_LDAP_PORT=3890
 export LLDAP_ADMIN_PORT=17170
-export LLDAP_JWT_SECRET=$(echo "thisisademopassword" | base64) # update with your own secret
-export LLDAP_LDAP_USER_PASS=$(echo "demoadminpassword" | base64) # update with your own admin password
-export LLDAP_BASE_DN=$(echo "dc=example,dc=com" | base64) # set your own base DN for the LDAP hierarchy
-```
+export LLDAP_DEBUG=true
+export LLDAP_JWT_SECRET=thisisademopassword
+export LLDAP_LDAP_USER_PASS=demoadminpassword
+export LLDAP_BASE_DN="dc=example,dc=com"
+export LLDAP_JWT_SECRET_B64=$(echo $LLDAP_JWT_SECRET | base64) 
+export LLDAP_LDAP_USER_PASS_B64=$(echo $LLDAP_LDAP_USER_PASS | base64) 
+export LLDAP_BASE_DN_B64=$(echo $LLDAP_BASE_DN | base64) 
 
 Once the session variables are set, either create the OpenShift secret via the
 CLI or by updating `lldap-credentials.yaml`.
