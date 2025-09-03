@@ -49,7 +49,8 @@ export LLDAP_LDAP_USER_PASS=demoadminpassword
 export LLDAP_BASE_DN="dc=example,dc=com"
 export LLDAP_JWT_SECRET_B64=$(echo $LLDAP_JWT_SECRET | base64) 
 export LLDAP_LDAP_USER_PASS_B64=$(echo $LLDAP_LDAP_USER_PASS | base64) 
-export LLDAP_BASE_DN_B64=$(echo $LLDAP_BASE_DN | base64) 
+export LLDAP_BASE_DN_B64=$(echo $LLDAP_BASE_DN | base64)
+```
 
 Once the session variables are set, either create the OpenShift secret via the
 CLI or by updating `lldap-credentials.yaml`.
